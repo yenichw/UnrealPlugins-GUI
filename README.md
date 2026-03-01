@@ -16,7 +16,7 @@ Avalonia-based desktop app to manage Unreal Engine projects and plugins, includi
 - Detect Unreal projects from common locations
 - Manually add projects and persist them across restarts
 
-### Plugin library (versioned)
+### Plugin library 
 
 - Import plugin archives into a local library
 - Keep multiple versions per plugin
@@ -28,7 +28,7 @@ Avalonia-based desktop app to manage Unreal Engine projects and plugins, includi
 
 ## Requirements
 
-- **Windows 10/11** (primary target)
+- **Windows 10/11** 
 - **.NET 8 SDK**
 
 ## Build & Run
