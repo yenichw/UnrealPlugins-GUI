@@ -20,9 +20,7 @@ Avalonia-based desktop app to manage Unreal Engine projects and plugins, includi
 
 - Import plugin archives into a local library
 - Keep multiple versions per plugin
-- Sort library entries by version
-- “Add to Project” installs the selected library version into any saved project
-
+- add plugins to project?and enable/disable it 
 ### Engines
 
 - Detect Unreal Engine installations
