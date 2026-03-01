@@ -17,11 +17,6 @@ Avalonia-based desktop app to manage Unreal Engine projects and plugins, includi
 - Detect Unreal projects from common locations
 - Manually add projects and persist them across restarts
 
-### Plugin management (per project)
-
-- Install plugins from archives into `Project/Plugins/<PluginId>/`
-- Enable/disable plugins by editing the project `.uproject` `Plugins` array
-
 ### Plugin library (versioned)
 
 - Import plugin archives into a local library
@@ -33,15 +28,6 @@ Avalonia-based desktop app to manage Unreal Engine projects and plugins, includi
 
 - Detect Unreal Engine installations
 - Read engine version from `Build.version` / registry association
-
-## Storage
-
-- **Saved projects list**:
-  - `%LOCALAPPDATA%\UnrealPluginsGUI\projects.json`
-- **Plugin library catalog**:
-  - `%LOCALAPPDATA%\UnrealPluginsGUI\PluginLibrary\library.json`
-- **Plugin library archives**:
-  - `%LOCALAPPDATA%\UnrealPluginsGUI\PluginLibrary\<PluginId>\<Version>\<archive>`
 
 ## Requirements
 
