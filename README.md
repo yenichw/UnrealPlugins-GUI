@@ -1,5 +1,7 @@
 # Unreal Plugins Manager (GUI)
 
+**Alpha version** - Application for managing Unreal Engine and project plugins with installation from ZIP archives, plugin version reading, and project installation.
+
 Avalonia-based desktop app to manage Unreal Engine projects and plugins, including installing plugins from archives and keeping a local plugin library with versioned entries.
 
 ## Author
