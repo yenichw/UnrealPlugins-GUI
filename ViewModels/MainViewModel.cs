@@ -24,6 +24,7 @@ namespace UnrealPluginsGUI.ViewModels
         private UnrealEngine? _selectedEngine;
         private UnrealProject? _selectedProject;
         private Plugin? _selectedPlugin;
+        private Plugin? _selectedEnginePlugin;
         private UnrealProject? _selectedLibraryTargetProject;
         private PluginLibraryEntry? _selectedLibraryEntry;
         private string _statusMessage = "Ready";
@@ -47,6 +48,7 @@ namespace UnrealPluginsGUI.ViewModels
             Engines = new ObservableCollection<UnrealEngine>();
             Projects = new ObservableCollection<UnrealProject>();
             Plugins = new ObservableCollection<Plugin>();
+            EnginePlugins = new ObservableCollection<Plugin>();
             LibraryEntries = new ObservableCollection<PluginLibraryEntry>();
 
             // Initialize commands
@@ -63,6 +65,10 @@ namespace UnrealPluginsGUI.ViewModels
             RemoveFromLibraryCommand = ReactiveCommand.CreateFromTask(RemoveFromLibraryAsync);
             AddLibraryToProjectCommand = ReactiveCommand.CreateFromTask(AddLibraryToProjectAsync);
 
+            // Engine plugin commands
+            EnableEnginePluginCommand = ReactiveCommand.CreateFromTask(EnableEnginePluginAsync);
+            DisableEnginePluginCommand = ReactiveCommand.CreateFromTask(DisableEnginePluginAsync);
+
             // Load initial data
             _ = Task.Run(LoadInitialDataAsync);
         }
@@ -70,6 +76,7 @@ namespace UnrealPluginsGUI.ViewModels
         public ObservableCollection<UnrealEngine> Engines { get; }
         public ObservableCollection<UnrealProject> Projects { get; }
         public ObservableCollection<Plugin> Plugins { get; }
+        public ObservableCollection<Plugin> EnginePlugins { get; }
         public ObservableCollection<PluginLibraryEntry> LibraryEntries { get; }
 
         public UnrealEngine? SelectedEngine
@@ -78,7 +85,7 @@ namespace UnrealPluginsGUI.ViewModels
             set
             {
                 this.RaiseAndSetIfChanged(ref _selectedEngine, value);
-                _ = Task.Run(LoadPluginsForEngineAsync);
+                _ = Task.Run(LoadProjectPluginsForEngineAsync);
             }
         }
 
@@ -96,6 +103,12 @@ namespace UnrealPluginsGUI.ViewModels
         {
             get => _selectedPlugin;
             set => this.RaiseAndSetIfChanged(ref _selectedPlugin, value);
+        }
+
+        public Plugin? SelectedEnginePlugin
+        {
+            get => _selectedEnginePlugin;
+            set => this.RaiseAndSetIfChanged(ref _selectedEnginePlugin, value);
         }
 
         public PluginLibraryEntry? SelectedLibraryEntry
@@ -134,6 +147,9 @@ namespace UnrealPluginsGUI.ViewModels
         public ReactiveCommand<Unit, Unit> ImportToLibraryCommand { get; }
         public ReactiveCommand<Unit, Unit> RemoveFromLibraryCommand { get; }
         public ReactiveCommand<Unit, Unit> AddLibraryToProjectCommand { get; }
+
+        public ReactiveCommand<Unit, Unit> EnableEnginePluginCommand { get; }
+        public ReactiveCommand<Unit, Unit> DisableEnginePluginCommand { get; }
 
         private async Task LoadInitialDataAsync()
         {
@@ -380,7 +396,7 @@ namespace UnrealPluginsGUI.ViewModels
             }
         }
 
-        private async Task LoadPluginsForEngineAsync()
+        private async Task LoadProjectPluginsForEngineAsync()
         {
             if (SelectedEngine == null)
             {
@@ -611,11 +627,135 @@ namespace UnrealPluginsGUI.ViewModels
         {
             if (SelectedEngine != null)
             {
-                await LoadPluginsForEngineAsync();
+                await LoadProjectPluginsForEngineAsync();
+                await LoadPluginsForEngineAsync(); // Also load engine plugins
             }
             else if (SelectedProject != null)
             {
                 await LoadPluginsForProjectAsync();
+            }
+        }
+
+        private async Task LoadPluginsForEngineAsync()
+        {
+            if (SelectedEngine == null)
+                return;
+
+            try
+            {
+                IsLoading = true;
+                StatusMessage = "Loading engine plugins...";
+
+                var plugins = await _engineService.GetEnginePluginsAsync(SelectedEngine);
+                
+                EnginePlugins.Clear();
+                foreach (var plugin in plugins)
+                    EnginePlugins.Add(plugin);
+
+                StatusMessage = $"Loaded {plugins.Count} engine plugins";
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Failed to load engine plugins: {ex.Message}";
+                _logger.LogError(ex, "Failed to load engine plugins");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+
+        private async Task EnableEnginePluginAsync()
+        {
+            if (SelectedEnginePlugin == null || SelectedEngine == null)
+                return;
+
+            try
+            {
+                IsLoading = true;
+                StatusMessage = $"Enabling engine plugin {SelectedEnginePlugin.Name}...";
+
+                // Check if plugin is critical
+                if (await _engineService.IsEnginePluginCriticalAsync(SelectedEnginePlugin.Id))
+                {
+                    StatusMessage = $"Cannot enable/disable critical engine plugin: {SelectedEnginePlugin.Name}";
+                    return;
+                }
+
+                // Check permissions
+                if (!await _engineService.HasEngineModifyPermissionsAsync(SelectedEngine))
+                {
+                    StatusMessage = "Insufficient permissions to modify engine plugins. Run as administrator.";
+                    return;
+                }
+
+                var success = await _engineService.SetEnginePluginDefaultStateAsync(SelectedEngine, SelectedEnginePlugin.Id, true);
+                
+                if (success)
+                {
+                    StatusMessage = $"Successfully enabled engine plugin {SelectedEnginePlugin.Name}";
+                    await LoadPluginsForEngineAsync(); // Refresh list
+                }
+                else
+                {
+                    StatusMessage = $"Failed to enable engine plugin {SelectedEnginePlugin.Name}";
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Error enabling engine plugin: {ex.Message}";
+                _logger.LogError(ex, $"Failed to enable engine plugin {SelectedEnginePlugin.Name}");
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
+
+        private async Task DisableEnginePluginAsync()
+        {
+            if (SelectedEnginePlugin == null || SelectedEngine == null)
+                return;
+
+            try
+            {
+                IsLoading = true;
+                StatusMessage = $"Disabling engine plugin {SelectedEnginePlugin.Name}...";
+
+                // Check if plugin is critical
+                if (await _engineService.IsEnginePluginCriticalAsync(SelectedEnginePlugin.Id))
+                {
+                    StatusMessage = $"Cannot enable/disable critical engine plugin: {SelectedEnginePlugin.Name}";
+                    return;
+                }
+
+                // Check permissions
+                if (!await _engineService.HasEngineModifyPermissionsAsync(SelectedEngine))
+                {
+                    StatusMessage = "Insufficient permissions to modify engine plugins. Run as administrator.";
+                    return;
+                }
+
+                var success = await _engineService.SetEnginePluginDefaultStateAsync(SelectedEngine, SelectedEnginePlugin.Id, false);
+                
+                if (success)
+                {
+                    StatusMessage = $"Successfully disabled engine plugin {SelectedEnginePlugin.Name}";
+                    await LoadPluginsForEngineAsync(); // Refresh list
+                }
+                else
+                {
+                    StatusMessage = $"Failed to disable engine plugin {SelectedEnginePlugin.Name}";
+                }
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Error disabling engine plugin: {ex.Message}";
+                _logger.LogError(ex, $"Failed to disable engine plugin {SelectedEnginePlugin.Name}");
+            }
+            finally
+            {
+                IsLoading = false;
             }
         }
 

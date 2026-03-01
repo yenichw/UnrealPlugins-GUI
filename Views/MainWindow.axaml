@@ -148,7 +148,7 @@
 
                             <Border Grid.Row="0" Background="#FF3F3F46" Padding="10">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Plugins" FontWeight="Bold" Foreground="White"/>
+                                    <TextBlock Text="Project Plugins" FontWeight="Bold" Foreground="White"/>
                                     <Button Content="Refresh"
                                             Command="{Binding RefreshPluginsCommand}"
                                             Margin="10,0,0,0"
@@ -326,6 +326,98 @@
                                                            Foreground="#FFCCCCCC"
                                                            Margin="0,5,0,0"
                                                            TextWrapping="Wrap"/>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Grid>
+                    </TabItem>
+
+                    <!-- Engine Plugins Tab -->
+                    <TabItem Header="Engine Plugins">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <Border Grid.Row="0" Background="#FF3F3F46" Padding="10">
+                                <StackPanel>
+                                    <TextBlock Text="Engine Plugins (Global)" FontWeight="Bold" Foreground="White"/>
+                                    <TextBlock Text="⚠️ Modifying engine plugins requires administrator privileges" 
+                                               FontSize="11" 
+                                               Foreground="#FFB8B846" 
+                                               Margin="0,5,0,0"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Row="1" Background="#FF2D2D30" Padding="10">
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="Enable"
+                                            Command="{Binding EnableEnginePluginCommand}"
+                                            Padding="10,3"
+                                            IsEnabled="{Binding SelectedEnginePlugin, Converter={x:Static conv:ObjectConverters.IsNotNull}}"/>
+                                    <Button Content="Disable"
+                                            Command="{Binding DisableEnginePluginCommand}"
+                                            Margin="10,0,0,0"
+                                            Padding="10,3"
+                                            IsEnabled="{Binding SelectedEnginePlugin, Converter={x:Static conv:ObjectConverters.IsNotNull}}"/>
+                                </StackPanel>
+                            </Border>
+
+                            <ListBox Grid.Row="2" 
+                                     ItemsSource="{Binding EnginePlugins}"
+                                     SelectedItem="{Binding SelectedEnginePlugin}"
+                                     Background="#FF252526"
+                                     Foreground="White"
+                                     BorderThickness="0">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#FF2D2D30" 
+                                                Padding="10" 
+                                                Margin="5"
+                                                CornerRadius="3">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <TextBlock Grid.Row="0" Grid.Column="0"
+                                                           Text="{Binding Name}"
+                                                           FontWeight="Bold"
+                                                           FontSize="14"/>
+
+                                                <TextBlock Grid.Row="0" Grid.Column="1"
+                                                           Text="{Binding Type}"
+                                                           FontSize="11"
+                                                           Foreground="#FF007ACC"
+                                                           Margin="10,0,0,0"/>
+
+                                                <TextBlock Grid.Row="1" Grid.Column="0"
+                                                           Text="{Binding Version}"
+                                                           FontSize="12"
+                                                           Foreground="#FFCCCCCC"/>
+
+                                                <TextBlock Grid.Row="2" Grid.Column="0"
+                                                           Text="{Binding Description}"
+                                                           FontSize="11"
+                                                           Foreground="#FFCCCCCC"
+                                                           Margin="0,5,0,0"
+                                                           TextWrapping="Wrap"/>
+
+                                                <StackPanel Grid.Row="3" Grid.Column="0" Orientation="Horizontal" Margin="0,5,0,0">
+                                                    <TextBlock Text="Enabled: " FontSize="11" Foreground="#FFCCCCCC"/>
+                                                    <TextBlock Text="{Binding IsEnabled}" FontSize="11" Foreground="{Binding IsEnabled, Converter={x:Static conv:ObjectConverters.IsEnabledToColor}}"/>
+                                                </StackPanel>
                                             </Grid>
                                         </Border>
                                     </DataTemplate>

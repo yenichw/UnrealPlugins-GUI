@@ -26,6 +26,7 @@ namespace UnrealPluginsGUI.Models
     {
         System,
         Installed,
-        Archive
+        Archive,
+        Engine
     }
 }
