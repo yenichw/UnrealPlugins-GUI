@@ -4,6 +4,8 @@
 
 Avalonia-based desktop app to manage Unreal Engine projects and plugins, including installing plugins from archives and keeping a local plugin library with versioned entries.
 
+This software was created just for fun, and it has some flaws and possible bugs. Please accept my apologies, and I will try to refine it to perfection in the future.
+
 ## Author
 
 - **Telegram**: https://t.me/yenchzk_archive
