@@ -1,0 +1,19 @@
+# Build outputs
+bin/
+obj/
+
+# Rider / Visual Studio
+.idea/
+.vs/
+*.user
+*.suo
+
+# Logs
+logs/
+
+# App runtime storage (if created in repo folder)
+PluginStorage/
+
+# OS files
+Thumbs.db
+.DS_Store

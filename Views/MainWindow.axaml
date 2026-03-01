@@ -1,0 +1,362 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:UnrealPluginsGUI.ViewModels"
+        xmlns:conv="clr-namespace:UnrealPluginsGUI.Converters"
+        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
+        x:Class="UnrealPluginsGUI.Views.MainWindow"
+        Title="Unreal Plugins Manager"
+        Width="1200" Height="800">
+
+    <Design.DataContext>
+        <vm:MainViewModel/>
+    </Design.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="#FF2D2D30" Padding="20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <TextBlock Text="Unreal Plugins Manager" 
+                               FontSize="24" 
+                               FontWeight="Bold" 
+                               Foreground="White"/>
+                    <TextBlock Text="{Binding StatusMessage}" 
+                               FontSize="14" 
+                               Foreground="#FFCCCCCC" 
+                               VerticalAlignment="Center" 
+                               Margin="20,0,0,0"/>
+                </StackPanel>
+
+                <Button Grid.Column="1"
+                        Content="About"
+                        Click="About_OnClick"
+                        Padding="10,4"/>
+            </Grid>
+        </Border>
+
+        <!-- Main Content -->
+        <Grid Grid.Row="1" Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Engines Panel -->
+            <Border Grid.Column="0" BorderBrush="#FF3F3F46" BorderThickness="1" CornerRadius="5">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <Border Grid.Row="0" Background="#FF3F3F46" Padding="10">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Engines" FontWeight="Bold" Foreground="White"/>
+                            <Button Content="Refresh" 
+                                    Command="{Binding RefreshEnginesCommand}"
+                                    Margin="10,0,0,0" 
+                                    Padding="5,2"/>
+                        </StackPanel>
+                    </Border>
+                    
+                    <ListBox Grid.Row="1" 
+                             ItemsSource="{Binding Engines}"
+                             SelectedItem="{Binding SelectedEngine}"
+                             Background="#FF252526"
+                             Foreground="White"
+                             BorderThickness="0">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="5">
+                                    <TextBlock Text="{Binding Version}" FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding Path}" FontSize="11" Foreground="#FFCCCCCC"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </Border>
+
+            <!-- Projects Panel -->
+            <Border Grid.Column="2" BorderBrush="#FF3F3F46" BorderThickness="1" CornerRadius="5">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <Border Grid.Row="0" Background="#FF3F3F46" Padding="10">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Projects" FontWeight="Bold" Foreground="White"/>
+                            <Button Content="Refresh" 
+                                    Command="{Binding RefreshProjectsCommand}"
+                                    Margin="10,0,0,0" 
+                                    Padding="5,2"/>
+                            <Button Content="Add Project" 
+                                    Command="{Binding AddProjectCommand}"
+                                    Margin="10,0,0,0" 
+                                    Padding="5,2"/>
+                        </StackPanel>
+                    </Border>
+                    
+                    <ListBox Grid.Row="1" 
+                             ItemsSource="{Binding Projects}"
+                             SelectedItem="{Binding SelectedProject}"
+                             Background="#FF252526"
+                             Foreground="White"
+                             BorderThickness="0">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="5">
+                                    <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding EngineVersion}" FontSize="11" Foreground="#FFCCCCCC"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </Border>
+
+            <!-- Plugins Panel -->
+            <Border Grid.Column="4" BorderBrush="#FF3F3F46" BorderThickness="1" CornerRadius="5">
+                <TabControl>
+                    <TabItem Header="Plugins">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <Border Grid.Row="0" Background="#FF3F3F46" Padding="10">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Plugins" FontWeight="Bold" Foreground="White"/>
+                                    <Button Content="Refresh"
+                                            Command="{Binding RefreshPluginsCommand}"
+                                            Margin="10,0,0,0"
+                                            Padding="5,2"/>
+                                    <Button Content="Install Plugin"
+                                            Command="{Binding InstallPluginCommand}"
+                                            Margin="10,0,0,0"
+                                            Padding="5,2"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Row="1" Background="#FF2D2D30" Padding="10">
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="Enable"
+                                            Command="{Binding EnablePluginCommand}"
+                                            Padding="10,3"
+                                            IsEnabled="{Binding SelectedPlugin, Converter={x:Static conv:ObjectConverters.IsNotNull}}"/>
+                                    <Button Content="Disable"
+                                            Command="{Binding DisablePluginCommand}"
+                                            Margin="10,0,0,0"
+                                            Padding="10,3"
+                                            IsEnabled="{Binding SelectedPlugin, Converter={x:Static conv:ObjectConverters.IsNotNull}}"/>
+                                </StackPanel>
+                            </Border>
+
+                            <ListBox Grid.Row="2"
+                                     ItemsSource="{Binding Plugins}"
+                                     SelectedItem="{Binding SelectedPlugin}"
+                                     Background="#FF252526"
+                                     Foreground="White"
+                                     BorderThickness="0">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Margin="5" Padding="10" Background="#FF3F3F46" CornerRadius="3">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <TextBlock Grid.Row="0" Grid.Column="0"
+                                                           Text="{Binding Name}"
+                                                           FontWeight="Bold"
+                                                           FontSize="14"/>
+
+                                                <TextBlock Grid.Row="0" Grid.Column="1"
+                                                           Text="{Binding Type}"
+                                                           FontSize="11"
+                                                           Foreground="#FF007ACC"
+                                                           Margin="10,0,0,0"/>
+
+                                                <TextBlock Grid.Row="1" Grid.Column="0"
+                                                           Text="{Binding Version}"
+                                                           FontSize="12"
+                                                           Foreground="#FFCCCCCC"/>
+
+                                                <TextBlock Grid.Row="2" Grid.Column="0"
+                                                           Text="{Binding EngineVersion}"
+                                                           FontSize="11"
+                                                           Foreground="#FF999999"/>
+
+                                                <TextBlock Grid.Row="3" Grid.Column="0"
+                                                           Text="{Binding Description}"
+                                                           FontSize="11"
+                                                           Foreground="#FFCCCCCC"
+                                                           Margin="0,5,0,0"
+                                                           TextWrapping="Wrap"/>
+
+                                                <CheckBox Grid.Row="1" Grid.Column="1"
+                                                          IsChecked="{Binding IsEnabled}"
+                                                          IsEnabled="False"
+                                                          Content="Enabled"
+                                                          Margin="10,0,0,0"/>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Grid>
+                    </TabItem>
+
+                    <TabItem Header="Library">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <Border Grid.Row="0" Background="#FF3F3F46" Padding="10">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Plugin Library" FontWeight="Bold" Foreground="White"/>
+                                    <Button Content="Refresh"
+                                            Command="{Binding RefreshLibraryCommand}"
+                                            Margin="10,0,0,0"
+                                            Padding="5,2"/>
+                                    <Button Content="Import"
+                                            Command="{Binding ImportToLibraryCommand}"
+                                            Margin="10,0,0,0"
+                                            Padding="5,2"/>
+                                    <Button Content="Remove"
+                                            Command="{Binding RemoveFromLibraryCommand}"
+                                            Margin="10,0,0,0"
+                                            Padding="5,2"
+                                            IsEnabled="{Binding SelectedLibraryEntry, Converter={x:Static conv:ObjectConverters.IsNotNull}}"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Row="1" Background="#FF2D2D30" Padding="10">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Project:" Foreground="#FFCCCCCC" VerticalAlignment="Center"/>
+                                    <ComboBox ItemsSource="{Binding Projects}"
+                                              SelectedItem="{Binding SelectedLibraryTargetProject}"
+                                              Width="220"
+                                              Margin="10,0,0,0">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Name}"/>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                    <Button Content="Add to Project"
+                                            Command="{Binding AddLibraryToProjectCommand}"
+                                            Margin="10,0,0,0"
+                                            Padding="10,3"
+                                            IsEnabled="{Binding SelectedLibraryEntry, Converter={x:Static conv:ObjectConverters.IsNotNull}}"/>
+                                </StackPanel>
+                            </Border>
+
+                            <ListBox Grid.Row="2"
+                                     ItemsSource="{Binding LibraryEntries}"
+                                     SelectedItem="{Binding SelectedLibraryEntry}"
+                                     Background="#FF252526"
+                                     Foreground="White"
+                                     BorderThickness="0">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Margin="5" Padding="10" Background="#FF3F3F46" CornerRadius="3">
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <TextBlock Grid.Row="0" Grid.Column="0"
+                                                           Text="{Binding Name}"
+                                                           FontWeight="Bold"
+                                                           FontSize="14"/>
+
+                                                <TextBlock Grid.Row="0" Grid.Column="1"
+                                                           Text="{Binding PluginId}"
+                                                           FontSize="11"
+                                                           Foreground="#FF007ACC"
+                                                           Margin="10,0,0,0"/>
+
+                                                <TextBlock Grid.Row="1" Grid.Column="0"
+                                                           Text="{Binding Version}"
+                                                           FontSize="12"
+                                                           Foreground="#FFCCCCCC"/>
+
+                                                <TextBlock Grid.Row="2" Grid.Column="0"
+                                                           Text="{Binding Description}"
+                                                           FontSize="11"
+                                                           Foreground="#FFCCCCCC"
+                                                           Margin="0,5,0,0"
+                                                           TextWrapping="Wrap"/>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+            </Border>
+        </Grid>
+
+        <!-- Status Bar -->
+        <Border Grid.Row="2" Background="#FF2D2D30" Padding="10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Grid.Column="0" 
+                           Text="{Binding StatusMessage}" 
+                           Foreground="#FFCCCCCC"/>
+                
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <ProgressBar IsIndeterminate="{Binding IsLoading}" 
+                                 Width="100" 
+                                 Height="16" 
+                                 Margin="10,0,0,0"
+                                 Foreground="#FF007ACC"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
