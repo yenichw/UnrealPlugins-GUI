@@ -6,8 +6,7 @@ Avalonia-based desktop app to manage Unreal Engine projects and plugins, includi
 
 ## Author
 
-- **Name**: Yen chezky
-- **Telegram channel (portfolio)**: https://t.me/yenchzk_archive
+- **Telegram**: https://t.me/yenchzk_archive
 - **GitHub**: https://github.com/yenichw
 
 ## Features
